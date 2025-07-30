@@ -184,10 +184,6 @@ module systolic_array_tb;
 		$stop;
 	end
 
-	task golden_model(int size);
-		  
-	endtask
-
 	task check_result();
 			$fwrite(file,"Output:\n");
 			foreach (out[i]) begin

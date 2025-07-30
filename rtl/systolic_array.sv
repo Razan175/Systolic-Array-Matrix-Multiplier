@@ -25,7 +25,6 @@ genvar i,j;
 generate
 	//Generate delay registers, each row or coulmn should be delayed by idx before entering the PE
 	for (i = 1; i < N_SIZE; i++) begin
-
 			shift_register #(.DATAWIDTH(DATAWIDTH), .N_SIZE(i)) sr1 (.clk(clk), .en(valid_in), .rst_n(rst_n), .D(matrix_a_in[i]), .Q(a_wire[i*N_SIZE]));
 			shift_register #(.DATAWIDTH(DATAWIDTH), .N_SIZE(i)) sr2 (.clk(clk), .en(valid_in), .rst_n(rst_n), .D(matrix_b_in[i]), .Q(b_wire[i]));
 	end
@@ -132,82 +131,6 @@ assign valid_out = (current_state == send_output);
 
 endmodule
 
-module PE #(parameter DATAWIDTH = 16, N_SIZE = 3) (
-	input clk,rst_n,   // Clock
-	input [DATAWIDTH - 1:0] A,B,
-	output reg [DATAWIDTH - 1:0] A_shifted, B_shifted,
-	output reg [DATAWIDTH*2 - 1:0] C
-);
 
-	always @(posedge clk or negedge rst_n) begin 
-		if(~rst_n) begin
-			C <= 0;
-			A_shifted <= 0;
-			B_shifted <= 0;
-		end else begin
-			A_shifted <= A;
-			B_shifted <= B;
-			C <= C + (A*B);
-		end
-	end
-endmodule
 
-module shift_register #(parameter DATAWIDTH = 16, N_SIZE = 3) (
-	input clk,    // Clock
-	input rst_n,en,  // Asynchronous reset active low
-	input [DATAWIDTH - 1:0] D,
-	output reg [DATAWIDTH - 1:0] Q
-);
-generate
-	if (N_SIZE == 1)
-		begin
-			always @(posedge clk or negedge rst_n) begin
-				if(~rst_n) begin
-					 Q <= 0;
-				end
-				else if (en)
-					Q <= D;
-				else
-					Q <= 0;
-				end
-			end
-		else
-		begin
-			reg [N_SIZE - 1:0] [DATAWIDTH - 1:0] data ;
-			always @(posedge clk or negedge rst_n) begin
-				if(~rst_n) begin
-					 Q <= 0;
-					 foreach (data[i]) begin
-					 	data[i] <= 0;
-					 end
-				end else begin
-					if (en) begin 
-					 	Q <= data[0];
-					 	data <= {D, data[N_SIZE - 1:1]};
-					 end
-					 else begin
-					 	Q <= 0;
-					 	data <= {1'b0, data[N_SIZE - 1:1]};
-					 end
-				end
-			end
-		end
-endgenerate
 
-endmodule
-
-module MUX_N_1 #(parameter DATAWIDTH = 32, N_SIZE = 3)(
-	input en,  
-	input [DATAWIDTH - 1:0] Din [N_SIZE],
-	input reg [$clog2(N_SIZE) - 1:0] sel,
-	output reg [DATAWIDTH - 1:0] Dout
-);
-
-always @(*) begin
-	if(en)
-        Dout = Din[sel];
-    else
-    	Dout = 0;
- end
-
-endmodule
