@@ -1,5 +1,5 @@
 # Systolic Array Matrix Multiplier
-![demo](https://github.com/user-attachments/assets/a0a3a1ba-fb27-46cf-bffd-b8f2b1cbb615)
+![Untitled-video-Made-with-Clipchamp](https://github.com/user-attachments/assets/d627fe04-65b1-47a1-a9b8-bc8875853b64)
 
 # Overview
 
